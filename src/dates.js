@@ -1,17 +1,13 @@
-export default (startDate, endDate, focusedInput) => {
-  if (focusedInput === 'startDate') {
+export default (startDate, endDate, focusOnStartDate) => {
+  if (focusOnStartDate) {
     if (startDate && endDate) {
-      return ({ startDate, endDate: null, focusedInput: 'endDate' });
+      return ({ startDate, endDate: null });
     }
-    return ({ startDate, endDate, focusedInput: 'endDate' });
+    return ({ startDate, endDate });
   }
 
-  if (focusedInput === 'endDate') {
-    if (endDate && startDate && endDate.isBefore(startDate)) {
-      return ({ startDate: endDate, endDate: null, focusedInput: 'endDate' });
-    }
-    return ({ startDate, endDate, focusedInput: 'startDate' });
+  if (endDate && startDate && endDate.isBefore(startDate)) {
+    return ({ startDate: endDate, endDate: null });
   }
-
-  return ({ startDate, endDate, focusedInput });
+  return ({ startDate, endDate });
 };

@@ -6,7 +6,6 @@ import {
   StyleSheet
 } from 'react-native';
 import moment from 'moment';
-import 'moment-range';
 import stylePropType from 'react-style-proptype';
 import Month from './Month.js';
 

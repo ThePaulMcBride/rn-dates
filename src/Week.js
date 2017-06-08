@@ -4,10 +4,13 @@ import {
   TouchableOpacity,
   Text
 } from 'react-native';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
 import momentPropTypes from 'react-moment-proptypes';
 import stylePropType from 'react-style-proptype';
 import dates from './dates.js';
+
+const moment = extendMoment(Moment);
 
 const Week = (props) => {
   const {
@@ -15,7 +18,6 @@ const Week = (props) => {
     date,
     startDate,
     endDate,
-    focusedInput,
     startOfWeek,
     onDatesChange,
     isDateBlocked,
@@ -24,98 +26,109 @@ const Week = (props) => {
     styles
   } = props;
 
-  const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
 
-  moment.range(startOfWeek, endOfWeek).by('days', (day) => {
-    const onPress = () => {
-      if (isDateBlocked(day)) {
-        onDisableClicked(day);
-      } else if (range) {
-        let isPeriodBlocked = false;
-        const start = focusedInput === 'startDate' ? day : startDate;
-        const end = focusedInput === 'endDate' ? day : endDate;
-        if (start && end) {
-          moment.range(start, end).by('days', (dayPeriod: moment) => {
-            if (isDateBlocked(dayPeriod)) isPeriodBlocked = true;
-          });
+  const datesInMonth = Array.from(moment.range(startOfWeek, endOfWeek).by('days'));
+
+  const days = datesInMonth
+    .map((day) => {
+      const onPress = () => {
+        if (isDateBlocked(day)) {
+          return onDisableClicked(day);
         }
-        onDatesChange(isPeriodBlocked ?
-          dates(end, null, 'startDate') :
-          dates(start, end, focusedInput));
-      } else {
-        onDatesChange({ date: day });
-      }
-    };
 
-    const isDateSelected = () => {
-      if (range) {
-        if (startDate && endDate) {
-          return day.isSameOrAfter(startDate) && day.isSameOrBefore(endDate);
+        if (range) {
+          const focusOnStartDate = !startDate || endDate;
+          const start = focusOnStartDate ? day : startDate;
+          const end = !focusOnStartDate ? day : endDate;
+
+          if (start && end) {
+            const isValid = Array.from(moment.range(start, end).by('days'))
+            .reduce((valid, dayPeriod) => {
+              if (isDateBlocked(dayPeriod) || !valid) return false;
+              return true;
+            }, true);
+
+            if (isValid) {
+              return onDatesChange(dates(start, end, focusOnStartDate));
+            }
+            return onDatesChange(dates(end, null, true));
+          }
+
+          return onDatesChange(dates(start, end, focusOnStartDate));
         }
-        return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
-      }
-      return date && day.isSame(date);
-    };
 
-    const isBlocked = isDateBlocked(day);
-    const isSelected = isDateSelected();
+        return onDatesChange({ date: day });
+      };
 
-    const dayStyles = () => {
-      if (isBlocked) {
-        return [
-          defaultStyles.day,
-          styles.day,
-          defaultStyles.dayBlocked,
-          styles.dayBlocked
-        ];
-      }
+      const isDateSelected = () => {
+        if (range) {
+          if (startDate && endDate) {
+            return day.isSameOrAfter(startDate) && day.isSameOrBefore(endDate);
+          }
+          return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
+        }
+        return date && day.isSame(date);
+      };
 
-      if (isSelected) {
-        return [
-          defaultStyles.day,
-          styles.day,
-          defaultStyles.daySelected,
-          styles.daySelected
-        ];
-      }
+      const isBlocked = isDateBlocked(day);
+      const isSelected = isDateSelected();
 
-      return [defaultStyles.day, styles.day];
-    };
+      const dayStyles = () => {
+        if (isBlocked) {
+          return [
+            defaultStyles.day,
+            styles.day,
+            defaultStyles.dayBlocked,
+            styles.dayBlocked
+          ];
+        }
 
-    const styleText = () => {
-      if (isBlocked) {
-        return [
-          defaultStyles.dayText,
-          styles.dayText,
-          defaultStyles.dayDisabledText,
-          styles.dayDisabledText
-        ];
-      }
+        if (isSelected) {
+          return [
+            defaultStyles.day,
+            styles.day,
+            defaultStyles.daySelected,
+            styles.daySelected
+          ];
+        }
 
-      if (isSelected) {
-        return [
-          defaultStyles.dayText,
-          styles.dayText,
-          defaultStyles.daySelectedText,
-          styles.daySelectedText
-        ];
-      }
+        return [defaultStyles.day, styles.day];
+      };
 
-      return [defaultStyles.dayText, styles.dayText];
-    };
+      const styleText = () => {
+        if (isBlocked) {
+          return [
+            defaultStyles.dayText,
+            styles.dayText,
+            defaultStyles.dayDisabledText,
+            styles.dayDisabledText
+          ];
+        }
 
-    days.push(
-      <TouchableOpacity
-        key={day.date()}
-        style={dayStyles()}
-        onPress={onPress}
-        disabled={isBlocked && !onDisableClicked}
-      >
-        <Text style={styleText()}>{day.date()}</Text>
-      </TouchableOpacity>
-    );
-  });
+        if (isSelected) {
+          return [
+            defaultStyles.dayText,
+            styles.dayText,
+            defaultStyles.daySelectedText,
+            styles.daySelectedText
+          ];
+        }
+
+        return [defaultStyles.dayText, styles.dayText];
+      };
+
+      return (
+        <TouchableOpacity
+          key={day.date()}
+          style={dayStyles()}
+          onPress={onPress}
+          disabled={isBlocked && !onDisableClicked}
+        >
+          <Text style={styleText()}>{day.date()}</Text>
+        </TouchableOpacity>
+      );
+    });
 
   return (
     <View style={[defaultStyles.week, styles.week]}>{days}</View>
@@ -127,7 +140,6 @@ Week.propTypes = {
   date: momentPropTypes.momentObj,
   startDate: momentPropTypes.momentObj,
   endDate: momentPropTypes.momentObj,
-  focusedInput: PropTypes.oneOf(['startDate', 'endDate']),
   startOfWeek: momentPropTypes.momentObj.isRequired,
   onDatesChange: PropTypes.func.isRequired,
   isDateBlocked: PropTypes.func.isRequired,
@@ -141,7 +153,6 @@ Week.defaultProps = {
   date: undefined,
   startDate: undefined,
   endDate: undefined,
-  focusedInput: 'startDate',
   styles: {}
 };
 

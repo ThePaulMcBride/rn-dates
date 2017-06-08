@@ -5,8 +5,11 @@ import {
 } from 'react-native';
 import momentPropTypes from 'react-moment-proptypes';
 import stylePropType from 'react-style-proptype';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
 import Week from './Week.js';
+
+const moment = extendMoment(Moment);
 
 const Month = (props) => {
   const {
@@ -16,22 +19,20 @@ const Month = (props) => {
     defaultStyles
   } = props;
 
-  const dayNames = [];
-  const weeks = [];
   const startOfMonth = focusedMonth.clone().startOf('month').startOf('isoweek');
   const endOfMonth = focusedMonth.clone().endOf('month');
   const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
+  const monthRange = moment.range(startOfMonth, endOfMonth);
 
-  weekRange.by('days', (day: moment) => {
-    dayNames.push(
+  const dayNames = Array.from(weekRange.by('days'))
+    .map(day => (
       <Text key={day.date()} style={[defaultStyles.dayName, styles.dayName]}>
         {day.format('ddd')}
       </Text>
-    );
-  });
+    ));
 
-  moment.range(startOfMonth, endOfMonth).by('weeks', (week) => {
-    weeks.push(
+  const weeks = Array.from(monthRange.by('weeks'))
+    .map(week => (
       <Week
         key={week}
         currentDate={currentDate}
@@ -40,8 +41,7 @@ const Month = (props) => {
         styles={styles}
         {...props}
       />
-    );
-  });
+    ));
 
   return (
     <View style={[defaultStyles.month, styles.month]}>
