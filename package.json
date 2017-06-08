@@ -1,0 +1,47 @@
+{
+  "name": "rn-dates",
+  "version": "1.0.0",
+  "description": "A calendar based date and daterange picker for react-native",
+  "main": "src/index.js",
+  "scripts": {
+    "eslint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThePaulMcBride/rn-dates.git"
+  },
+  "keywords": [
+    "react",
+    "react",
+    "native",
+    "datepicker",
+    "calendar",
+    "daterange",
+    "picker"
+  ],
+  "author": "Paul McBride",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ThePaulMcBride/rn-dates/issues"
+  },
+  "homepage": "https://github.com/ThePaulMcBride/rn-dates#readme",
+  "dependencies": {
+    "moment": "^2.17.1",
+    "moment-range": "2.2.0",
+    "react-moment-proptypes": "^1.4.0",
+    "react-style-proptype": "^3.0.0"
+  },
+  "peerDependencies": {
+    "react": ">= 15.3.2",
+    "react-native": ">= 0.35.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.17.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0"
+  }
+}
