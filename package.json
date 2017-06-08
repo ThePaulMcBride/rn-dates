@@ -28,7 +28,8 @@
   "homepage": "https://github.com/ThePaulMcBride/rn-dates#readme",
   "dependencies": {
     "moment": "^2.17.1",
-    "moment-range": "2.2.0",
+    "moment-range": "^3.0.3",
+    "react": "^15.5.4",
     "react-moment-proptypes": "^1.4.0",
     "react-style-proptype": "^3.0.0"
   },
