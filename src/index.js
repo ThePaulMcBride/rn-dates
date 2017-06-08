@@ -1,13 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import {
-  Text,
-  View,
-  TouchableOpacity,
   StyleSheet
 } from 'react-native';
 import moment from 'moment';
-import stylePropType from 'react-style-proptype';
-import Month from './Month.js';
+import Calendar from './Components/Calendar.js';
 
 const defaultStyles = StyleSheet.create({
   calendar: {
@@ -63,53 +59,26 @@ class Dates extends Component {
     focusedMonth: moment().startOf('month')
   }
 
+  previousMonth = () => {
+    this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
+  };
+
+  nextMonth = () => {
+    this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
+  };
+
   render() {
-    const previousMonth = () => {
-      this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
-    };
-
-    const nextMonth = () => {
-      this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
-    };
-
-    const {
-      styles,
-      titleFormat
-    } = this.props;
-
     return (
-      <View style={[defaultStyles.calendar, styles.calendar]}>
-        <View style={[defaultStyles.heading, styles.heading]}>
-          <TouchableOpacity onPress={previousMonth}>
-            <Text style={[defaultStyles.headingText, styles.headingText]}>{'< Prev'}</Text>
-          </TouchableOpacity>
-          <Text style={[defaultStyles.headingText, styles.headingText]}>
-            {this.state.focusedMonth.format(titleFormat)}
-          </Text>
-          <TouchableOpacity onPress={nextMonth}>
-            <Text style={[defaultStyles.headingText, styles.headingText]}>{'Next >'}</Text>
-          </TouchableOpacity>
-        </View>
-        <Month
-          currentDate={this.state.currentDate}
-          focusedMonth={this.state.focusedMonth}
-          defaultStyles={defaultStyles}
-          styles={styles}
-          {...this.props}
-        />
-      </View>
+      <Calendar
+        currentDate={this.state.currentDate}
+        focusedMonth={this.state.focusedMonth}
+        defaultStyles={defaultStyles}
+        previousMonth={this.previousMonth}
+        nextMonth={this.nextMonth}
+        {...this.props}
+      />
     );
   }
 }
-
-Dates.propTypes = {
-  styles: PropTypes.objectOf(stylePropType),
-  titleFormat: PropTypes.string.isRequired
-};
-
-Dates.defaultProps = {
-  styles: {},
-  titleFormat: 'MMMM'
-};
 
 export default Dates;
