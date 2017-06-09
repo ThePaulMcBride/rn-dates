@@ -56,7 +56,7 @@ Calendar.propTypes = {
 
 Calendar.defaultProps = {
   styles: {},
-  titleFormat: 'MMMM'
+  titleFormat: 'MMMM YYYY'
 };
 
 export default Calendar;

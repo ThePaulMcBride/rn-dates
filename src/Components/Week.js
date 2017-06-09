@@ -14,8 +14,7 @@ const Week = (props) => {
   const {
     startOfWeek,
     defaultStyles,
-    styles,
-    ...dayProps
+    styles
   } = props;
 
   const endOfWeek = startOfWeek.clone().endOf('isoweek');

@@ -35,11 +35,12 @@ const Week = (props) => {
       const end = !focusOnStartDate ? day : endDate;
 
       if (start && end) {
-        const isValid = Array.from(moment.range(start, end).by('days'))
-        .reduce((valid, dayPeriod) => {
-          if (isDateBlocked(dayPeriod) || !valid) return false;
-          return true;
-        }, true);
+        const isValid = Array.from(moment.range(start, end)
+          .by('days'))
+          .reduce((valid, dayPeriod) => {
+            if (isDateBlocked(dayPeriod) || !valid) return false;
+            return true;
+          }, true);
 
         if (isValid) {
           return onDatesChange(dates(start, end, focusOnStartDate));
@@ -128,8 +129,8 @@ Week.propTypes = {
   startDate: momentPropTypes.momentObj,
   endDate: momentPropTypes.momentObj,
   onDatesChange: PropTypes.func.isRequired,
-  isDateBlocked: PropTypes.func.isRequired,
-  onDisableClicked: PropTypes.func.isRequired,
+  isDateBlocked: PropTypes.func,
+  onDisableClicked: PropTypes.func,
   styles: PropTypes.objectOf(stylePropType),
   defaultStyles: PropTypes.objectOf(stylePropType).isRequired
 };
@@ -139,6 +140,8 @@ Week.defaultProps = {
   date: undefined,
   startDate: undefined,
   endDate: undefined,
+  isDateBlocked: () => false,
+  onDisableClicked: () => null,
   styles: {}
 };
 
